@@ -29,10 +29,11 @@ HID_& HID()
 int HID_::getInterface(uint8_t* interfaceCount)
 {
 	*interfaceCount += 1; // uses 1
-	HIDDescriptor hidInterface = {
-		D_INTERFACE(pluggedInterface, 1, USB_DEVICE_CLASS_HUMAN_INTERFACE, HID_SUBCLASS_NONE, HID_PROTOCOL_NONE),
+	static HIDDescriptor hidInterface = {
+		D_INTERFACE(pluggedInterface, 2, USB_DEVICE_CLASS_HUMAN_INTERFACE, HID_SUBCLASS_NONE, HID_PROTOCOL_NONE),
 		D_HIDREPORT(descriptorSize),
-		D_ENDPOINT(USB_ENDPOINT_IN(pluggedEndpoint), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0x01)
+		D_ENDPOINT(USB_ENDPOINT_IN(pluggedEndpoint), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 10),
+		D_ENDPOINT(USB_ENDPOINT_OUT(pluggedEndpoint), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 10)
 	};
 	return USB_SendControl(0, &hidInterface, sizeof(hidInterface));
 }
@@ -40,8 +41,17 @@ int HID_::getInterface(uint8_t* interfaceCount)
 int HID_::getDescriptor(USBSetup& setup)
 {
 	// Check if this is a HID Class Descriptor request
-	if (setup.bmRequestType != REQUEST_DEVICETOHOST_STANDARD_INTERFACE) { return 0; }
-	if (setup.wValueH != HID_REPORT_DESCRIPTOR_TYPE) { return 0; }
+	if ((USB_BOS_DESCRIPTOR_TYPE == setup.wValueH) && (setup.wValueL == 0) && (setup.wIndex == 0)) {
+		static BOSDescriptor bos = D_BOS(sizeof(BOSDescriptor), 0);
+		USB_SendControl(0, &bos, sizeof(bos));
+		return sizeof(bos);
+	}
+	else if (setup.bmRequestType != REQUEST_DEVICETOHOST_STANDARD_INTERFACE) {
+		return 0;
+	}
+	else if (setup.wValueH != HID_REPORT_DESCRIPTOR_TYPE) {
+		return 0;
+	}
 
 	// In a HID Class Descriptor wIndex cointains the interface number
 	if (setup.wIndex != pluggedInterface) { return 0; }
@@ -96,6 +106,27 @@ int HID_::SendReport(uint8_t id, const void *data, int len)
   return USB_Send(pluggedEndpoint, packet, sizeof(packet));
 }
 
+int HID_::Send(const void *data, int len)
+{
+  /* Prefix the report with the report ID */
+  return USB_Send(pluggedEndpoint, data, len);
+}
+
+int HID_::RecvReport(uint8_t id, void *data, int len)
+{
+  return USB_Recv(pluggedEndpoint, data, len);
+}
+
+int HID_::RecvReportWait(uint8_t id, void *data, int len)
+{
+  return USB_RecvWait(pluggedEndpoint, data, len);
+}
+
+int HID_::CanRecvReport(uint8_t id)
+{
+  return USB_Available(pluggedEndpoint);
+}
+
 bool HID_::setup(USBSetup& setup)
 {
 	if (pluggedInterface != setup.wIndex) {
@@ -147,11 +178,12 @@ bool HID_::setup(USBSetup& setup)
 	return false;
 }
 
-HID_::HID_(void) : PluggableUSBModule(1, 1, epType),
+HID_::HID_(void) : PluggableUSBModule(2, 1, epType),
                    rootNode(NULL), descriptorSize(0),
                    protocol(HID_REPORT_PROTOCOL), idle(1)
 {
 	epType[0] = EP_TYPE_INTERRUPT_IN;
+	epType[1] = EP_TYPE_INTERRUPT_OUT;
 	PluggableUSB().plug(this);
 }
 

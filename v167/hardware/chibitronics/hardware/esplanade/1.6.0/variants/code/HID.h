@@ -80,6 +80,7 @@ typedef struct
   InterfaceDescriptor hid;
   HIDDescDescriptor   desc;
   EndpointDescriptor  in;
+  EndpointDescriptor  out;
 } HIDDescriptor;
 
 class HIDSubDescriptor {
@@ -97,6 +98,10 @@ public:
   HID_(void);
   int begin(void);
   int SendReport(uint8_t id, const void* data, int len);
+  int Send(const void* data, int len); // Raw send
+  int CanRecvReport(uint8_t id);
+  int RecvReport(uint8_t id, void *data, int len);
+  int RecvReportWait(uint8_t id, void *data, int len);
   void AppendDescriptor(HIDSubDescriptor* node);
 
 protected:
@@ -107,7 +112,7 @@ protected:
   uint8_t getShortName(char* name);
 
 private:
-  uint8_t epType[1];
+  uint8_t epType[2];
 
   HIDSubDescriptor* rootNode;
   uint16_t descriptorSize;
@@ -121,7 +126,7 @@ private:
 // https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use
 HID_& HID();
 
-#define D_HIDREPORT(length) { 9, 0x21, 0x01, 0x01, 0, 1, 0x22, lowByte(length), highByte(length) }
+#define D_HIDREPORT(length) { 9, 0x21, 0x11, 0x01, 0, 1, 0x22, lowByte(length), highByte(length) }
 
 #endif // USBCON
 

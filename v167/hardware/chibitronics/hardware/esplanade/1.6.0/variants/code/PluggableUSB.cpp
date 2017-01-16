@@ -105,8 +105,8 @@ PluggableUSB_& PluggableUSB()
 	return obj;
 }
 
-PluggableUSB_::PluggableUSB_() : lastIf(CDC_ACM_INTERFACE + CDC_INTERFACE_COUNT),
-                                 lastEp(CDC_FIRST_ENDPOINT + CDC_ENPOINT_COUNT),
+PluggableUSB_::PluggableUSB_() : lastIf(0),
+                                 lastEp(1),
                                  rootNode(NULL)
 {
 	// Empty
