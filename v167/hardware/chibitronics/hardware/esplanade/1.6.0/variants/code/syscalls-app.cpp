@@ -729,36 +729,12 @@ extern "C" {
       asm("svc #97");
     }
     __attribute__((naked))
-    void map(void) {
-      asm("svc #108");
-    }
-    __attribute__((naked))
     void i2cTransceive(void) {
       asm("svc #111");
     }
     __attribute__((naked))
     void i2cSetupSlave(void) {
       asm("svc #112");
-    }
-    __attribute__((naked))
-    void hookSoftPwm(void) {
-      asm("svc #113");
-    }
-    __attribute__((naked))
-    void getOsVersion(void) {
-      asm("svc #114");
-    }
-    __attribute__((naked))
-    void getHwVersion(void) {
-      asm("svc #115");
-    }
-    __attribute__((naked))
-    void digitalPinToInterrupt(void) {
-      asm("svc #116");
-    }
-    __attribute__((naked))
-    void analogReadResolution(void) {
-      asm("svc #117");
     }
     __attribute__((naked))
     void createThread(void) {
@@ -888,6 +864,66 @@ extern "C" {
     void suspendThreadTimeoutS(void) {
       asm("svc #149");
     }
+    __attribute__((naked))
+    void hookSoftPwm(void) {
+      asm("svc #150");
+    }
+    __attribute__((naked))
+    void getOsVersion(void) {
+      asm("svc #151");
+    }
+    __attribute__((naked))
+    void getHwVersion(void) {
+      asm("svc #152");
+    }
+    __attribute__((naked))
+    void getGitVersion(void) {
+      asm("svc #153");
+    }
+    __attribute__((naked))
+    void digitalPinToInterrupt(void) {
+      asm("svc #154");
+    }
+    __attribute__((naked))
+    void analogReadResolution(void) {
+      asm("svc #155");
+    }
+    __attribute__((naked))
+    void canonicalizePin(void) {
+      asm("svc #156");
+    }
+    __attribute__((naked))
+    void canonicalisePin(void) {
+      asm("svc #156");
+    }
+    __attribute__((naked))
+    void MurmurHash3_x86_32(void) {
+      asm("svc #157");
+    }
+    __attribute__((naked))
+    void murmur3(void) {
+      asm("svc #157");
+    }
+    __attribute__((naked))
+    void enableLptmr(void) {
+      asm("svc #158");
+    }
+    __attribute__((naked))
+    void enableTimer(void) {
+      asm("svc #158");
+    }
+    __attribute__((naked))
+    void enableInterrupt(void) {
+      asm("svc #159");
+    }
+    __attribute__((naked))
+    void disableInterrupt(void) {
+      asm("svc #160");
+    }
+    __attribute__((naked))
+    void setInterruptPriority(void) {
+      asm("svc #161");
+    }
 };
   __attribute__((naked))
   void pinMode(int pin, enum pin_mode mode) {
@@ -928,22 +964,6 @@ extern "C" {
   __attribute__((naked))
   void noTone(int pin) {
     asm("svc #99");
-  }
-  __attribute__((naked))
-  void shiftOut(int dataPin, int clockPin, int bitOrder, uint8_t val) {
-    asm("svc #100");
-  }
-  __attribute__((naked))
-  uint8_t shiftIn(int dataPin, int clockPin, int bitOrder) {
-    asm("svc #101");
-  }
-  __attribute__((naked))
-  unsigned long pulseIn(int pin, uint8_t state, unsigned long timeout) {
-    asm("svc #102");
-  }
-  __attribute__((naked))
-  unsigned long pulseInLong(int pin, uint8_t state, unsigned long timeout) {
-    asm("svc #103");
   }
   __attribute__((naked))
   unsigned long millis(void) {

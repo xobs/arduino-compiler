@@ -20,7 +20,6 @@ void init(void);
 void runCallbacks(void);
 void loop(void);
 
-typedef uint32_t size_t;
 size_t strlen(const char *s);
 void *malloc(size_t size);
 void free(void *ptr);
@@ -45,6 +44,12 @@ int snprintf(char *str, size_t size, const char *format, ...);
 int putchar(int c);
 int cangetchar(void);
 int putchar(int c);
+long int strtol(const char *nptr, char **endptr, int base);
+unsigned long int strtoul(const char *nptr, char **endptr, int base);
+
+void enableTimer(int timer_number);
+int canonicalizePin(int pin);
+int canonicalisePin(int pin);
 
 #ifdef __cplusplus
 };
@@ -65,6 +70,7 @@ int digitalRead(int pin);
 void analogWrite(int pin, int value);
 void analogReference(enum analog_reference_type type);
 int analogRead(int pin);
+void analogReadResolution(int bits);
 
 /* Interrupt handling */
 void attachInterrupt(int irq, void (*func)(void), enum irq_mode mode);
@@ -101,12 +107,21 @@ void delayMicroseconds(unsigned int usecs);
 /* Math */
 #define DEG_TO_RAD 0.017453292519943295769236907684886
 #define RAD_TO_DEG 57.295779513082320876798154814105
+#define M_PI       3.14159265358979323846  /* pi */
+#define M_PI_2     1.57079632679489661923  /* pi/2 */
+#define M_PI_4     0.78539816339744830962  /* pi/4 */
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)>(b)?(a):(b))
+#define abs(x) ((x)>0?(x):-(x))
+#define pow(base, exponent) (exp(log2(base) * exponent))
+#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
+#define round(x)     ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
+#define radians(deg) ((deg)*DEG_TO_RAD)
+#define degrees(rad) ((rad)*RAD_TO_DEG)
+#define sq(x) ((x)*(x))
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int abs(int x);
 
 int serialCanGetChar(void);
 int serialGetChar(void);
@@ -119,9 +134,14 @@ double sin(double rad);
 double atan2(double y, double x);
 double log2(double rad);
 double exp(double x);
-long map(long value, long fromLow, long fromHigh, long toLow, long toHigh);
-double pow(double base, double exponent);
 double sqrt(double x);
+static inline long map(long x, long in_min, long in_max, long out_min, long out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+uint32_t getOsVersion(void);
+uint32_t getHwVersion(void);
+const char * getGitVersion(void);
 #ifdef __cplusplus
 };
 #endif
@@ -261,7 +281,10 @@ long randomSeed(unsigned long seed);
 #define SWD_DIO           PTA(2)
 
 /* Interrupts */
-#define I2C_IRQ           8
+#define PMC_IRQ           6
+#define I2C0_IRQ          8
+#define I2C_IRQ           9
+#define SPI_IRQ           10
 #define SERIAL_IRQ        12
 #define ADC_IRQ           15
 #define PWM0_IRQ          17
@@ -269,5 +292,6 @@ long randomSeed(unsigned long seed);
 #define LPTMR_IRQ         28
 #define PORTA_IRQ         30
 #define PORTB_IRQ         31
+#define NOT_AN_INTERRUPT  -1
 
 #endif /* __ARDUINO_KOSAGI_H__ */
