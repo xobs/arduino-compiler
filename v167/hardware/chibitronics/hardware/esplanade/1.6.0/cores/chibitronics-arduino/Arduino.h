@@ -52,6 +52,8 @@ int canonicalizePin(int pin);
 int canonicalisePin(int pin);
 
 void analogReadResolution(int bits);
+int digitalPinToInterrupt(int pin);
+
 #ifdef __cplusplus
 };
 #endif
